@@ -1,0 +1,812 @@
+{
+	"info": {
+		"_postman_id": "6ab429ab-d324-45f5-9359-46ddb0c01d85",
+		"name": "Video Game DB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32193095",
+		"_collection_link": "https://speeding-astronaut-902742.postman.co/workspace/testworkspace~6565c879-e766-4257-bb37-3ccf94487431/collection/32193095-6ab429ab-d324-45f5-9359-46ddb0c01d85?action=share&source=collection_link&creator=32193095"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Request Authentication token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.collectionVariables.set(\"token\", pm.response.json().token);\r",
+									"});\r",
+									"\r",
+									"// Test for response time\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(500);\r",
+									"});\r",
+									" \r",
+									" // Check for headers\r",
+									"pm.test(\"Content-Type header is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Token exists in the response body\", function () {\r",
+									"    pm.expect(pm.response.json().token).to.exist;\r",
+									"    pm.expect(pm.response.json().token).to.be.a('string');\r",
+									"});\r",
+									"\r",
+									"// Create variable to store token\r",
+									"pm.collectionVariables.set(\"token\", pm.response.json().token);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"admin\",\r\n  \"username\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/authenticate",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Username and password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// No token present in response body\r",
+									"pm.test(\"Token is not present in the response body\", function () {\r",
+									"    pm.expect(pm.response.json()).to.not.have.property('token');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"password\",\r\n  \"username\": \"admin1\"\r\n}\r\n\r\n// Verify login with empty username and password \r\n// {\r\n//   \"password\": \"\",\r\n//   \"username\": \"\"\r\n// }\r\n\r\n// Verify login with empty password \r\n// {\r\n//   \"password\": \"\",\r\n//   \"username\": \"admin1\"\r\n// }\r\n\r\n\r\n// Verify login with empty username \r\n// {\r\n//   \"password\": \"password\",\r\n//   \"username\": \"\"\r\n// }\r\n\r\n// Verify login with  username  and password using space\r\n// {\r\n//   \"password\": \" \",\r\n//   \"username\": \" \"\r\n// }\r\n\r\n// Verify login with  valid username  and invalid password \r\n// {\r\n//   \"password\": \"abcd\",\r\n//   \"username\": \"admin\"\r\n// }\r\n\r\n// Verify login with  invalid username  and valid password \r\n// {\r\n//   \"password\": \"password\",\r\n//   \"username\": \"abcd\"\r\n// }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/authenticate",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Video game Controller",
+			"item": [
+				{
+					"name": "Retrive all Video games",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Verify the content of each item in the response body\", function () {\r",
+									"    pm.response.json().forEach(function(item) {\r",
+									"        pm.expect(item).to.have.property('id');\r",
+									"        pm.expect(item).to.have.property('name');\r",
+									"        pm.expect(item).to.have.property('releaseDate');\r",
+									"        pm.expect(item).to.have.property('reviewScore');\r",
+									"        pm.expect(item).to.have.property('category');\r",
+									"        pm.expect(item).to.have.property('rating');\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each id in the response body is unique\", function () {\r",
+									"    const ids = pm.response.json().map(item => item.id);\r",
+									"    pm.expect(ids.length).to.equal(new Set(ids).size);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response schema is valid\", function () {\r",
+									"    var schema = {\r",
+									"        type: \"array\",\r",
+									"        items: {\r",
+									"            type: \"object\",\r",
+									"            properties: {\r",
+									"                id: { type: \"number\" },\r",
+									"                name: { type: \"string\" },\r",
+									"                releaseDate: { type: \"string\" },\r",
+									"                reviewScore: { type: \"number\" },\r",
+									"                category: { type: \"string\" },\r",
+									"                rating: { type: \"string\" }\r",
+									"            },\r",
+									"            required: [\"id\", \"name\", \"releaseDate\", \"reviewScore\", \"category\", \"rating\"]\r",
+									"        }\r",
+									"    };\r",
+									"\r",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/videogame",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"videogame"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Video game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify the content of the response body\", function () {\r",
+									"    var jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property('id').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('name').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('releaseDate').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('reviewScore').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('category').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('rating').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"Platform\",\r\n  \"name\": \"Mario\",\r\n  \"rating\": \"Mature\",\r\n  \"releaseDate\": \"2012-05-04\",\r\n  \"reviewScore\": 85\r\n}\r\n\r\n//Verify creating of game which has already been created. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n//Verify creating of video game without providing the id. . \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n\r\n//Verify creating of video game without video game name. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n//Verify creating of video game without video game release date.  \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n\r\n//Verify creating of video game without video game review score. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\"\r\n// }\r\n\r\n//Verify creating of video game without video game category.  \r\n// {\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n//Verify creating of video game without video game rating. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/videogame",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"videogame"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrive Video game with id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify that the URL ID matches the response body ID\", function () {\r",
+									"    let url = pm.request.url.toString();\r",
+									"    let urlId = url.split('/').pop(); \r",
+									"    urlId = parseInt(urlId, 10);\r",
+									"\r",
+									"    pm.expect(urlId).to.be.a('number');\r",
+									"    let responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    let responseId = responseBody.id;\r",
+									"    \r",
+									"    pm.expect(responseId).to.eql(urlId, \"ID in the response body does not match the URL ID\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Video game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify the content of the response body\", function () {\r",
+									"    var jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property('id').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('name').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('releaseDate').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('reviewScore').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('category').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('rating').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify that the URL ID matches the response body ID\", function () {\r",
+									"    let url = pm.request.url.toString();\r",
+									"    let urlId = url.split('/').pop(); \r",
+									"    urlId = parseInt(urlId, 10);\r",
+									"\r",
+									"    pm.expect(urlId).to.be.a('number');\r",
+									"    let responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    let responseId = responseBody.id;\r",
+									"    \r",
+									"    pm.expect(responseId).to.eql(urlId, \"ID in the response body does not match the URL ID\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"Platform\",\r\n  \"name\": \"Mario\",\r\n  \"rating\": \"Mature\",\r\n  \"releaseDate\": \"2012-05-04\",\r\n  \"reviewScore\": 85\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Video Game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Video game controller V2",
+			"item": [
+				{
+					"name": "Retrive all Video games",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Verify the content of each item in the response body\", function () {\r",
+									"    pm.response.json().forEach(function(item) {\r",
+									"        pm.expect(item).to.have.property('id');\r",
+									"        pm.expect(item).to.have.property('name');\r",
+									"        pm.expect(item).to.have.property('releaseDate');\r",
+									"        pm.expect(item).to.have.property('reviewScore');\r",
+									"        pm.expect(item).to.have.property('category');\r",
+									"        pm.expect(item).to.have.property('rating');\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each id in the response body is unique\", function () {\r",
+									"    const ids = pm.response.json().map(item => item.id);\r",
+									"    pm.expect(ids.length).to.equal(new Set(ids).size);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response schema is valid\", function () {\r",
+									"    var schema = {\r",
+									"        type: \"array\",\r",
+									"        items: {\r",
+									"            type: \"object\",\r",
+									"            properties: {\r",
+									"                id: { type: \"number\" },\r",
+									"                name: { type: \"string\" },\r",
+									"                releaseDate: { type: \"string\" },\r",
+									"                reviewScore: { type: \"number\" },\r",
+									"                category: { type: \"string\" },\r",
+									"                rating: { type: \"string\" }\r",
+									"            },\r",
+									"            required: [\"id\", \"name\", \"releaseDate\", \"reviewScore\", \"category\", \"rating\"]\r",
+									"        }\r",
+									"    };\r",
+									"\r",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/v2/videogame",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"videogame"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Video game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify the content of the response body\", function () {\r",
+									"    var jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property('id').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('name').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('releaseDate').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('reviewScore').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('category').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('rating').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"Platform\",\r\n  \"name\": \"Mario\",\r\n  \"rating\": \"Mature\",\r\n  \"releaseDate\": \"2012-05-04\",\r\n  \"reviewScore\": 85\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/v2/videogame",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"videogame"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrive Video game with id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify that the URL ID matches the response body ID\", function () {\r",
+									"    let url = pm.request.url.toString();\r",
+									"    let urlId = url.split('/').pop(); \r",
+									"    urlId = parseInt(urlId, 10);\r",
+									"\r",
+									"    pm.expect(urlId).to.be.a('number');\r",
+									"    let responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    let responseId = responseBody.id;\r",
+									"    \r",
+									"    pm.expect(responseId).to.eql(urlId, \"ID in the response body does not match the URL ID\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/v2/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Video game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response headers have specific field\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify the content of the response body\", function () {\r",
+									"    var jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property('id').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('name').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('releaseDate').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('reviewScore').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('category').that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property('rating').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verify that the URL ID matches the response body ID\", function () {\r",
+									"    let url = pm.request.url.toString();\r",
+									"    let urlId = url.split('/').pop(); \r",
+									"    urlId = parseInt(urlId, 10);\r",
+									"\r",
+									"    pm.expect(urlId).to.be.a('number');\r",
+									"    let responseBody = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseBody).to.have.property('id');\r",
+									"    let responseId = responseBody.id;\r",
+									"    \r",
+									"    pm.expect(responseId).to.eql(urlId, \"ID in the response body does not match the URL ID\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"Platform\",\r\n  \"name\": \"Mario\",\r\n  \"rating\": \"Mature\",\r\n  \"releaseDate\": \"2012-05-04\",\r\n  \"reviewScore\": 85\r\n}\r\n\r\n//Verify updating of video game without providing the id. . \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n\r\n//Verify updating of video game without video game name. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n//Verify updating of video game without video game release date.  \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n\r\n//Verify updating of video game without video game review score. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\"\r\n// }\r\n\r\n//Verify updating of video game without video game category.  \r\n// {\r\n//   \"name\": \"Mario\",\r\n//   \"rating\": \"Mature\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }\r\n\r\n//Verify updating of video game without video game rating. \r\n// {\r\n//   \"category\": \"Platform\",\r\n//   \"name\": \"Mario\",\r\n//   \"releaseDate\": \"2012-05-04\",\r\n//   \"reviewScore\": 85\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/v2/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Video Game",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is within acceptable range\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/api/v2/videogame/7",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"videogame",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseurl",
+			"value": "https://www.videogamedb.uk:443",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
